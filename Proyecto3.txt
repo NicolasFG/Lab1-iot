@@ -1,0 +1,134 @@
+#include <Keypad.h>
+
+const byte ROWS = 4;
+const byte COLS = 4;
+
+#define LED_ROJOP 14
+#define LED_VERDEP 15
+
+#define LED_ROJO 13
+#define LED_VERDE 2
+#define LED_AMBAR 16
+
+ 
+
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte rowPins[ROWS] = {5, 6, 7, 8};
+byte colPins[COLS] = {9, 10, 11, 12};
+
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+
+int hora = 0;
+bool primerDigitoIngresado = false;
+
+void setup() {
+
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_AMBAR, OUTPUT);
+  
+  pinMode(LED_ROJOP, OUTPUT);
+  pinMode(LED_VERDEP, OUTPUT);
+ 
+ 
+  Serial.begin(9600);
+}
+
+void loop() {
+  char key = keypad.getKey();
+ 
+  if (key != NO_KEY) {
+    if (key == '*') {
+      hora = 0;
+      primerDigitoIngresado = false;
+    } else if (isdigit(key)) {
+      int digito = key - '0';
+      if (!primerDigitoIngresado) {
+        hora = digito * 10;
+        primerDigitoIngresado = true;
+      } else {
+        hora += digito;
+       
+        if (hora >= 0 && hora <= 23) {
+          cambiarSemaforo(hora);
+        } else {
+          Serial.println("Hora ingresada no válida.");
+          hora = 0;
+          primerDigitoIngresado = false;
+        }
+      }
+    }
+  }
+}
+
+void cambiarSemaforo(int hora) {
+  Serial.print("Hora ingresada: ");
+  Serial.println(hora);
+ 
+ 
+  if (hora <= 8) {
+    char key = keypad.getKey();
+
+    while (key != '*'){
+
+      digitalWrite(LED_VERDE, HIGH);
+      digitalWrite(LED_ROJOP, HIGH);
+      delay(1000);
+      digitalWrite(LED_VERDE, LOW);
+      digitalWrite(LED_AMBAR, HIGH);
+      delay(1000);
+      digitalWrite(LED_ROJO, HIGH);
+      digitalWrite(LED_AMBAR, LOW);
+      digitalWrite(LED_VERDEP, HIGH);digitalWrite(LED_ROJOP, LOW);
+      delay(1000);
+      digitalWrite(LED_VERDEP, LOW);
+      digitalWrite(LED_ROJO, LOW);
+
+      delay(1000);
+      char key = keypad.getKey();
+      Serial.println(key);
+
+    }   
+      
+  } else if (hora <= 16) {
+
+   
+    digitalWrite(LED_VERDE, HIGH);  
+    delay(1000);
+    digitalWrite(LED_ROJO, HIGH);
+    digitalWrite(LED_VERDE, LOW);
+    digitalWrite(LED_VERDEP, HIGH);
+    delay(1000);
+    digitalWrite(LED_AMBAR, LOW);
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_ROJO, LOW);
+    digitalWrite(LED_VERDEP, LOW);
+    delay(1000);
+    digitalWrite(LED_AMBAR, HIGH);
+    digitalWrite(LED_VERDE, LOW);
+    delay(1000);
+    digitalWrite(LED_AMBAR, LOW);
+   
+  } else {
+   
+    digitalWrite(LED_ROJO, HIGH);
+    digitalWrite(LED_ROJOP, HIGH);
+    delay(1000); 
+    digitalWrite(LED_ROJO, LOW);
+    digitalWrite(LED_ROJOP, LOW);
+    delay(1000);
+    digitalWrite(LED_ROJO, HIGH);
+    digitalWrite(LED_ROJOP, HIGH);
+    delay(1000); 
+    digitalWrite(LED_ROJO, LOW);
+    digitalWrite(LED_ROJOP, LOW);
+    
+   
+  }
+}
