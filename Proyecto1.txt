@@ -1,0 +1,55 @@
+#define LED_ROJO 2
+#define LED_AZUL 3
+#define LED_VERDE 4
+#define LED_AMBAR 5
+#define ENTRADA 13
+
+
+void setup()
+{
+  pinMode(LED_ROJO, OUTPUT);
+  pinMode(LED_AZUL, OUTPUT);
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_AMBAR, OUTPUT);
+  pinMode(ENTRADA, INPUT);
+}
+
+void loop()
+{
+  if(digitalRead(ENTRADA) == LOW){
+  digitalWrite(LED_ROJO, HIGH);
+  delay(1000);
+  digitalWrite(LED_ROJO, LOW);
+  delay(1000);
+  digitalWrite(LED_AZUL, HIGH);
+  delay(1000);
+  digitalWrite(LED_AZUL, LOW);
+  delay(1000);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(1000);
+  digitalWrite(LED_VERDE, LOW);
+  delay(1000);
+  digitalWrite(LED_AMBAR, HIGH);
+  delay(1000);
+  digitalWrite(LED_AMBAR, LOW);
+  delay(1000);
+  }else{
+  digitalWrite(LED_AMBAR, HIGH);
+  delay(1000);
+  digitalWrite(LED_AMBAR, LOW);
+  delay(1000);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(1000);
+  digitalWrite(LED_VERDE, LOW);
+  delay(1000);
+  digitalWrite(LED_AZUL, HIGH);
+  delay(1000);
+  digitalWrite(LED_AZUL, LOW);
+  delay(1000);  
+  digitalWrite(LED_ROJO, HIGH);
+  delay(1000);
+  digitalWrite(LED_ROJO, LOW);
+  delay(1000);
+  }
+ 
+}
