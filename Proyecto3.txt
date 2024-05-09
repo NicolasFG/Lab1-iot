@@ -26,6 +26,8 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 int hora = 0;
 bool primerDigitoIngresado = false;
+bool isLooping = false;
+
 
 void setup() {
 
@@ -40,94 +42,121 @@ void setup() {
   Serial.begin(9600);
 }
 
+
+char cancel(char key) {
+  key = keypad.getKey();
+  if(key == '*') {
+    isLooping = false;
+  }
+  return key;
+}
+
 void loop() {
+
+
   char key = keypad.getKey();
  
-  if (key != NO_KEY) {
-    if (key == '*') {
-      hora = 0;
-      primerDigitoIngresado = false;
-    } else if (isdigit(key)) {
-      int digito = key - '0';
-      if (!primerDigitoIngresado) {
-        hora = digito * 10;
-        primerDigitoIngresado = true;
-      } else {
-        hora += digito;
-       
-        if (hora >= 0 && hora <= 23) {
-          cambiarSemaforo(hora);
+  if(!isLooping) {
+    if (key != NO_KEY) {
+      if (key == '*') {
+        hora = 0;
+        primerDigitoIngresado = false;
+      } else if (isdigit(key)) {
+        int digito = key - '0';
+        if (!primerDigitoIngresado) {
+          hora = digito * 10;
+          primerDigitoIngresado = true;
         } else {
-          Serial.println("Hora ingresada no válida.");
-          hora = 0;
-          primerDigitoIngresado = false;
+          hora += digito;
+        
+          if (hora >= 0 && hora <= 23) {
+            cambiarSemaforo(hora, key);
+            isLooping = true;
+          } else {
+            Serial.println("Hora ingresada no válida.");
+            hora = 0;
+            primerDigitoIngresado = false;
+          }
         }
       }
     }
   }
+  else {
+
+    cambiarSemaforo(hora, key);
+  }
 }
 
-void cambiarSemaforo(int hora) {
+void cambiarSemaforo(int hora, char key) {
   Serial.print("Hora ingresada: ");
   Serial.println(hora);
  
  
   if (hora <= 8) {
-    char key = keypad.getKey();
+    cancel(key);
+    digitalWrite(LED_VERDE, HIGH);
+    digitalWrite(LED_ROJOP, HIGH);
+    
+    delay(1000);
+    cancel(key);
+    digitalWrite(LED_VERDE, LOW);
+    digitalWrite(LED_AMBAR, HIGH);
+    delay(1000);
+    cancel(key);
+    digitalWrite(LED_ROJO, HIGH);
+    digitalWrite(LED_AMBAR, LOW);
+    digitalWrite(LED_VERDEP, HIGH);digitalWrite(LED_ROJOP, LOW);
+    delay(1000);
+    cancel(key);
+    digitalWrite(LED_VERDEP, LOW);
+    digitalWrite(LED_ROJO, LOW);
+    delay(1000);
+    cancel(key);
 
-    while (key != '*'){
-
-      digitalWrite(LED_VERDE, HIGH);
-      digitalWrite(LED_ROJOP, HIGH);
-      delay(1000);
-      digitalWrite(LED_VERDE, LOW);
-      digitalWrite(LED_AMBAR, HIGH);
-      delay(1000);
-      digitalWrite(LED_ROJO, HIGH);
-      digitalWrite(LED_AMBAR, LOW);
-      digitalWrite(LED_VERDEP, HIGH);digitalWrite(LED_ROJOP, LOW);
-      delay(1000);
-      digitalWrite(LED_VERDEP, LOW);
-      digitalWrite(LED_ROJO, LOW);
-
-      delay(1000);
-      char key = keypad.getKey();
-      Serial.println(key);
-
-    }   
       
   } else if (hora <= 16) {
 
-   
+   cancel(key);
     digitalWrite(LED_VERDE, HIGH);  
     delay(1000);
+    cancel(key);
     digitalWrite(LED_ROJO, HIGH);
     digitalWrite(LED_VERDE, LOW);
     digitalWrite(LED_VERDEP, HIGH);
     delay(1000);
+    cancel(key);
     digitalWrite(LED_AMBAR, LOW);
     digitalWrite(LED_VERDE, HIGH);
     digitalWrite(LED_ROJO, LOW);
     digitalWrite(LED_VERDEP, LOW);
     delay(1000);
+    cancel(key);
     digitalWrite(LED_AMBAR, HIGH);
     digitalWrite(LED_VERDE, LOW);
     delay(1000);
+    cancel(key);
     digitalWrite(LED_AMBAR, LOW);
    
-  } else {
+    
    
+  } else {
+    cancel(key);
     digitalWrite(LED_ROJO, HIGH);
     digitalWrite(LED_ROJOP, HIGH);
     delay(1000); 
+    cancel(key);
     digitalWrite(LED_ROJO, LOW);
     digitalWrite(LED_ROJOP, LOW);
     delay(1000);
+    cancel(key);
     digitalWrite(LED_ROJO, HIGH);
     digitalWrite(LED_ROJOP, HIGH);
     delay(1000); 
+    cancel(key);
     digitalWrite(LED_ROJO, LOW);
     digitalWrite(LED_ROJOP, LOW);
+    
+    
     
    
   }
